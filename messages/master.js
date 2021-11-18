@@ -19,7 +19,7 @@ const sendMasterLog = (_, { message, options }) => {
  * @param {Worker} worker Worker who sent the message
  * @param {Object} options Options sended by the worker
  */
-const askForWork = (worker, options) => {
+const askForWork = (worker, { options }) => {
   const nextFile = getNextFile()
   if (nextFile) {
     // Set the new file to test
@@ -42,7 +42,7 @@ let filesTested = 0
  */
 const registerTestCount = (_, { options, stats = {} }) => {
   addWorkersStats(stats)
-  log(`Running ${filesTested++}/${getTotalFiles()} test files`, { loading: !options._min, interval: false })
+  log(`Running ${filesTested++}/${getTotalFiles()} test files`, { loading: !options._min, newLine: false })
 }
 
 let exiting = false
