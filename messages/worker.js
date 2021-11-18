@@ -1,0 +1,96 @@
+
+const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
+const { formatError } = require('../lib/logger.js')
+const { loadConfig } = require('../lib/config.js')
+
+let config
+
+/**
+ * Send error message to master
+ * @param {Worker} worker Current worker
+ * @param {Object} data Data in the message
+ * @param {Object} data.options Current worker options
+ * @param {Object} data.error The error to log
+ */
+const sendWorkerError = (worker, { options, error }) => {
+  worker.send({
+    message: MASTER_MESSAGES.EXIT_ALL_WORKERS,
+    data: {
+      options,
+      exitCode: 1,
+      error: error.formatted || formatError(error),
+      stats: error.stats
+    }
+  })
+}
+/**
+ * Prepare test by creating server, starting mocha and running first test
+ * @param {Worker} worker Current worker
+ * @param {Object} data Data in the message
+ * @param {Object} data.options Options of the mocha instance
+ */
+const prepareTest = async (worker, { options }) => {
+  try {
+    config = loadConfig(options._config)
+    await config.prepareTest({ options })
+    await runTest(worker, { options })
+  } catch (error) {
+    sendWorkerError(worker, { options, error })
+  }
+}
+/**
+ * Delete all information in DB and askForWork to master
+ * @param {Worker} worker Current worker
+ * @param {Object} options Current worker options
+ */
+const askForWork = async (worker, options) => {
+  try {
+    await config.beforeNextRun({ options })
+    worker.send({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
+  } catch (error) {
+    sendWorkerError(worker, error)
+  }
+}
+/**
+ * Update current files with new options run test and ask for work when finish
+ * @param {Worker} worker Current worker
+ * @param {Object} data Data in the message
+ * @param {Object} data.options Current worker options
+ */
+const runTest = async (worker, { options }) => {
+  try {
+    const testInfo = await config.runTest({ options })
+    const { stats } = testInfo || {}
+    if (stats) worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
+    await askForWork(worker, options)
+  } catch (error) {
+    const { stats } = error
+    sendWorkerError(worker, { options, stats, error })
+  }
+}
+/**
+ * Disconnect worker from cluster and exit worker process
+ * @param {Worker} worker Current worker
+ * @param {Object} data Data in the message
+ * @param {Object} data.options Current worker options
+ * @param {Object} data.exitCode The exit code to exit
+ */
+const stopWorker = async (worker, { options = {}, exitCode }) => {
+  try {
+    await config.stopTest({ options, exitCode })
+    worker.disconnect()
+    process.exit(exitCode)
+  } catch (error) {
+    sendWorkerError(worker, error)
+  }
+}
+
+// The function to execute for each message
+// Each function will received the worker, and the data sended in the message
+const WORKER_MESSAGES_RUN = {
+  [WORKER_MESSAGES.SETUP_TESTS]: prepareTest,
+  [WORKER_MESSAGES.RUN_TEST]: runTest,
+  [WORKER_MESSAGES.STOP_WORKER]: stopWorker
+}
+
+module.exports = { WORKER_MESSAGES_RUN }

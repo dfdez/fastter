@@ -1,0 +1,25 @@
+{
+  "name": "fastter",
+  "version": "1.0.2",
+  "description": "This module is made to run test making use of multiple cores",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "dfdez",
+  "license": "ISC",
+  "bin": "bin/index.js",
+  "dependencies": {
+    "glob": "^7.2.0",
+    "yargs": "^17.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-standard": "^4.1.0"
+  }
+}
