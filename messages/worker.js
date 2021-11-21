@@ -23,6 +23,7 @@ const sendWorkerError = (worker, { options, error }) => {
     }
   })
 }
+
 /**
  * Prepare test by creating server, starting mocha and running first test
  * @param {Worker} worker Current worker
@@ -38,6 +39,7 @@ const prepareTest = async (worker, { options }) => {
     sendWorkerError(worker, { options, error })
   }
 }
+
 /**
  * Delete all information in DB and askForWork to master
  * @param {Worker} worker Current worker
@@ -51,6 +53,7 @@ const askForWork = async (worker, options) => {
     sendWorkerError(worker, error)
   }
 }
+
 /**
  * Update current files with new options run test and ask for work when finish
  * @param {Worker} worker Current worker
@@ -61,13 +64,14 @@ const runTest = async (worker, { options }) => {
   try {
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
-    if (stats) worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
+    worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
     await askForWork(worker, options)
   } catch (error) {
     const { stats } = error
     sendWorkerError(worker, { options, stats, error })
   }
 }
+
 /**
  * Disconnect worker from cluster and exit worker process
  * @param {Worker} worker Current worker

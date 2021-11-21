@@ -2,7 +2,7 @@ const cluster = require('cluster')
 const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
 const { log } = require('../lib/logger.js')
 const { getNextFile, getTotalFiles } = require('../lib/files/index.js')
-const { addWorkersStats } = require('../lib/master/stats.js')
+const { addWorkersStats, getWorkersRunning } = require('../lib/master/stats.js')
 
 /**
  * Send a log from a worker
@@ -11,9 +11,10 @@ const { addWorkersStats } = require('../lib/master/stats.js')
  * @param {Object} data.message Message to send
  * @param {Object} data.options Options of the message to send
  */
-const sendMasterLog = (_, { message, options }) => {
+const sendLog = (_, { message, options }) => {
   return log(message, options)
 }
+
 /**
  * Ask to master for work by looking for pending files
  * @param {Worker} worker Worker who sent the message
@@ -40,9 +41,11 @@ let filesTested = 0
  * @param {Object} data.options Options sended by the worker
  * @param {Object} data.stats Worker stats
  */
-const registerTestCount = (_, { options, stats = {} }) => {
+const registerTestCount = (_, { options, stats }) => {
   addWorkersStats(stats)
-  log(`Running ${filesTested++}/${getTotalFiles()} test files`, { loading: !options._min, newLine: false })
+  const runningWorkers = getWorkersRunning()
+  const totalWorkers = options._workers
+  log(`Running ${filesTested++}/${getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`, { loading: !options._min, newLine: false })
 }
 
 let exiting = false
@@ -73,7 +76,7 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
 const MASTER_MESSAGES_RUN = {
-  [MASTER_MESSAGES.SEND_LOG]: sendMasterLog,
+  [MASTER_MESSAGES.SEND_LOG]: sendLog,
   [MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
   [MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
   [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
