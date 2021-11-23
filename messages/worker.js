@@ -79,7 +79,7 @@ const runTest = async (worker, { options }) => {
  * @param {Object} data.options Current worker options
  * @param {Object} data.exitCode The exit code to exit
  */
-const stopWorker = async (worker, { options = {}, exitCode }) => {
+const stopWorker = async (worker, { options, exitCode }) => {
   try {
     await config.stopTest({ options, exitCode })
     worker.disconnect()
