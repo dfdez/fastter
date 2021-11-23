@@ -1,6 +1,6 @@
 {
   "name": "fastter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This module is made to run test making use of multiple cores",
   "main": "index.js",
   "scripts": {
