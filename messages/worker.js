@@ -1,4 +1,3 @@
-
 const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
 const { formatError } = require('../lib/logger.js')
 const { loadConfig } = require('../lib/config.js')
@@ -34,6 +33,7 @@ const prepareTest = async (worker, { options }) => {
   try {
     config = loadConfig(options._config)
     await config.prepareTest({ options })
+    // Start runTest askForWork loop
     await runTest(worker, { options })
   } catch (error) {
     sendWorkerError(worker, { options, error })
@@ -45,12 +45,12 @@ const prepareTest = async (worker, { options }) => {
  * @param {Worker} worker Current worker
  * @param {Object} options Current worker options
  */
-const askForWork = async (worker, options) => {
+const askForWork = async (worker, { options }) => {
   try {
     await config.beforeNextRun({ options })
     worker.send({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
   } catch (error) {
-    sendWorkerError(worker, error)
+    sendWorkerError(worker, { options, error })
   }
 }
 
@@ -65,7 +65,7 @@ const runTest = async (worker, { options }) => {
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
     worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
-    await askForWork(worker, options)
+    await askForWork(worker, { options })
   } catch (error) {
     const { stats } = error
     sendWorkerError(worker, { options, stats, error })
@@ -85,14 +85,14 @@ const stopWorker = async (worker, { options = {}, exitCode }) => {
     worker.disconnect()
     process.exit(exitCode)
   } catch (error) {
-    sendWorkerError(worker, error)
+    sendWorkerError(worker, { options, error })
   }
 }
 
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
 const WORKER_MESSAGES_RUN = {
-  [WORKER_MESSAGES.SETUP_TESTS]: prepareTest,
+  [WORKER_MESSAGES.PREPARE_TESTS]: prepareTest,
   [WORKER_MESSAGES.RUN_TEST]: runTest,
   [WORKER_MESSAGES.STOP_WORKER]: stopWorker
 }

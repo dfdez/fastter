@@ -1,6 +1,5 @@
 const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../../constants')
 
-
 beforeEach(() => {
   jest.resetAllMocks()
 })
@@ -10,7 +9,7 @@ describe('Test sendLog', () => {
 
   const logger = require('../../lib/logger.js')
   const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
-  const { MASTER_MESSAGES_RUN } = require('../master.js')
+  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
 
   const sendLog = MASTER_MESSAGES_RUN[MASTER_MESSAGES.SEND_LOG]
 
@@ -32,7 +31,7 @@ describe('Test askForWork', () => {
   }
   const files = require('../../lib/files/index.js')
   const spyGetNextFile = jest.spyOn(files, 'getNextFile')
-  const { MASTER_MESSAGES_RUN } = require('../master.js')
+  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
 
   const askForWork = MASTER_MESSAGES_RUN[MASTER_MESSAGES.ASK_FOR_WORK]
 
@@ -65,7 +64,7 @@ describe('Test registerTestCount', () => {
   const spyAddWorkersStats = jest.spyOn(stats, 'addWorkersStats')
   const spyGetWorkersRunning = jest.spyOn(stats, 'getWorkersRunning')
   const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
-  const { MASTER_MESSAGES_RUN } = require('../master.js')
+  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
 
   const registerTestCount = MASTER_MESSAGES_RUN[MASTER_MESSAGES.REGISTER_TEST_COUNT]
 
@@ -93,12 +92,12 @@ describe('Test exitAllWorkers', () => {
   const mockSendMessage = jest.fn()
   jest.doMock('cluster', () => ({
     workers: {
-      '1': {
+      1: {
         send: mockSendMessage
       }
     }
   }))
-  const { MASTER_MESSAGES_RUN } = require('../master.js')
+  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
   const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
 
   it('should exit all workers and don\'t do nothing if already called', () => {

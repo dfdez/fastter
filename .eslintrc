@@ -16,9 +16,7 @@
     "no-unused-expressions": 0,
     "jest/no-focused-tests": "error",
     "jest/no-disabled-tests": "error",
-    "jest/no-commented-out-tests": "error",
     "jest/no-standalone-expect": "error",
-    "jest/expect-expect": "warning",
-    "jest/valid-title": "warning"
+    "jest/no-commented-out-tests": "warn"
   }
 }
