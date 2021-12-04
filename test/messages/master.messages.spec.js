@@ -4,7 +4,7 @@ beforeEach(() => {
   jest.resetAllMocks()
 })
 
-describe('Test sendLog', () => {
+describe('Test sendLog master message function', () => {
   jest.resetModules()
 
   const logger = require('../../lib/logger.js')
@@ -19,11 +19,12 @@ describe('Test sendLog', () => {
       _test: true
     }
     sendLog(null, { message: testMessage, options })
+
     expect(spyLog).toHaveBeenCalledWith(testMessage, options)
   })
 })
 
-describe('Test askForWork', () => {
+describe('Test askForWork master message function', () => {
   jest.resetModules()
 
   const worker = {
@@ -41,6 +42,7 @@ describe('Test askForWork', () => {
       _test: true
     }
     askForWork(worker, { options })
+
     expect(spyGetNextFile).toHaveBeenCalled()
     expect(worker.send).toHaveBeenCalledWith({ message: WORKER_MESSAGES.RUN_TEST, data: { options } })
   })
@@ -51,18 +53,18 @@ describe('Test askForWork', () => {
       _test: true
     }
     askForWork(worker, { options })
+
     expect(spyGetNextFile).toHaveBeenCalled()
     expect(worker.send).toHaveBeenCalledWith({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
   })
 })
 
-describe('Test registerTestCount', () => {
+describe('Test registerTestCount master message function', () => {
   jest.resetModules()
 
   const stats = require('../../lib/master/stats.js')
   const logger = require('../../lib/logger.js')
   const spyAddWorkersStats = jest.spyOn(stats, 'addWorkersStats')
-  const spyGetWorkersRunning = jest.spyOn(stats, 'getWorkersRunning')
   const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
   const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
 
@@ -76,13 +78,13 @@ describe('Test registerTestCount', () => {
       _test: true
     }
     registerTestCount(null, { options, stats })
+
     expect(spyAddWorkersStats).toHaveBeenCalledWith(stats)
-    expect(spyGetWorkersRunning).toHaveBeenCalled()
     expect(spyLog).toHaveBeenCalled()
   })
 })
 
-describe('Test exitAllWorkers', () => {
+describe('Test exitAllWorkers master message function', () => {
   jest.resetModules()
 
   const stats = require('../../lib/master/stats.js')
@@ -103,6 +105,7 @@ describe('Test exitAllWorkers', () => {
   it('should exit all workers and don\'t do nothing if already called', () => {
     const params = { stats: { passes: 1 }, options: { _test: true }, exitCode: 1, error: ['Test error'] }
     exitAllWorkers(null, params)
+
     // should add stats
     expect(spyAddWorkersStats).toHaveBeenCalledWith(params.stats)
     // should log error
@@ -112,6 +115,7 @@ describe('Test exitAllWorkers', () => {
 
     // don't do nothing if exitAllWorkers have already been called
     exitAllWorkers(null, {})
+
     expect(spyAddWorkersStats).toHaveBeenCalledTimes(1)
     expect(spyLog).toHaveBeenCalledTimes(1)
     expect(mockSendMessage).toHaveBeenCalledTimes(1)

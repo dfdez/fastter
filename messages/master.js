@@ -2,7 +2,7 @@ const cluster = require('cluster')
 const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
 const { log } = require('../lib/logger.js')
 const { getNextFile, getTotalFiles } = require('../lib/files/index.js')
-const { addWorkersStats, getWorkersRunning } = require('../lib/master/stats.js')
+const { workersStats, addWorkersStats } = require('../lib/master/stats.js')
 
 /**
  * Send a log from a worker
@@ -43,7 +43,7 @@ let filesTested = 0
  */
 const registerTestCount = (_, { options, stats }) => {
   addWorkersStats(stats)
-  const runningWorkers = getWorkersRunning()
+  const runningWorkers = workersStats.workersRunning
   const totalWorkers = options._workers
   log(`Running ${filesTested++}/${getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`, { loading: !options._min, newLine: false })
 }
