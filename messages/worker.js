@@ -2,8 +2,6 @@ const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
 const { formatError } = require('../lib/logger.js')
 const { loadConfig } = require('../lib/config.js')
 
-let config
-
 /**
  * Send error message to master
  * @param {Worker} worker Current worker
@@ -24,14 +22,14 @@ const sendWorkerError = (worker, { options, error }) => {
 }
 
 /**
- * Prepare test by creating server, starting mocha and running first test
+ * Prepare test from config and execute runTest to start runTest askForWork loop
  * @param {Worker} worker Current worker
  * @param {Object} data Data in the message
- * @param {Object} data.options Options of the mocha instance
+ * @param {Object} data.options Current worker options
  */
 const prepareTest = async (worker, { options }) => {
   try {
-    config = loadConfig(options._config)
+    const config = loadConfig(options._config)
     await config.prepareTest({ options })
     // Start runTest askForWork loop
     await runTest(worker, { options })
@@ -43,9 +41,11 @@ const prepareTest = async (worker, { options }) => {
 /**
  * Delete all information in DB and askForWork to master
  * @param {Worker} worker Current worker
- * @param {Object} options Current worker options
+ * @param {Object} params
+ * @param {Object} params.options Current worker options
+ * @param {Object} params.config Loaded config object
  */
-const askForWork = async (worker, { options }) => {
+const askForWork = async (worker, { options, config }) => {
   try {
     await config.beforeNextRun({ options })
     worker.send({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
@@ -62,10 +62,11 @@ const askForWork = async (worker, { options }) => {
  */
 const runTest = async (worker, { options }) => {
   try {
+    const config = loadConfig(options._config)
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
     worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
-    await askForWork(worker, { options })
+    await askForWork(worker, { options, config })
   } catch (error) {
     const { stats } = error
     sendWorkerError(worker, { options, stats, error })
@@ -81,6 +82,7 @@ const runTest = async (worker, { options }) => {
  */
 const stopWorker = async (worker, { options, exitCode }) => {
   try {
+    const config = loadConfig(options._config)
     await config.stopTest({ options, exitCode })
     worker.disconnect()
     process.exit(exitCode)
