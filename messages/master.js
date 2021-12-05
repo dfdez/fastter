@@ -1,8 +1,8 @@
 import cluster from 'cluster'
-import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants/index.js'
-import { log } from '../lib/logger.js'
-import { getNextFile, getTotalFiles } from '../lib/files/index.js'
-import { workersStats, addWorkersStats } from '../lib/master/stats.js'
+import constants from '../constants/index.js'
+import Logger from '../lib/logger.js'
+import Files from '../lib/files/index.js'
+import Stats from '../lib/master/stats.js'
 
 /**
  * Send a log from a worker
@@ -12,7 +12,7 @@ import { workersStats, addWorkersStats } from '../lib/master/stats.js'
  * @param {Object} data.options Options of the message to send
  */
 const sendLog = (_, { message, options }) => {
-  return log(message, options)
+  return Logger.log(message, options)
 }
 
 /**
@@ -21,15 +21,15 @@ const sendLog = (_, { message, options }) => {
  * @param {Object} options Options sended by the worker
  */
 const askForWork = (worker, { options }) => {
-  const nextFile = getNextFile()
+  const nextFile = Files.getNextFile()
   if (nextFile) {
     // Set the new file to test
     options._nextFile = nextFile
     // Send work to the worker
-    worker.send({ message: WORKER_MESSAGES.RUN_TEST, data: { options } })
+    worker.send({ message: constants.WORKER_MESSAGES.RUN_TEST, data: { options } })
   } else {
     // Stop the worker since there is nothing to do
-    worker.send({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
+    worker.send({ message: constants.WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
   }
 }
 
@@ -42,10 +42,10 @@ let filesTested = 0
  * @param {Object} data.stats Worker stats
  */
 const registerTestCount = (_, { options, stats }) => {
-  addWorkersStats(stats)
-  const runningWorkers = workersStats.workersRunning
+  Stats.addWorkersStats(stats)
+  const runningWorkers = Stats.workersStats.workersRunning
   const totalWorkers = options._workers
-  log(`Running ${filesTested++}/${getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`, { loading: !options._min, newLine: false })
+  Logger.log(`Running ${filesTested++}/${Files.getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`, { loading: !options._min, newLine: false })
 }
 
 let exiting = false
@@ -62,24 +62,22 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
   if (!exiting) {
     exiting = true
 
-    addWorkersStats(stats)
-    log(error)
+    Stats.addWorkersStats(stats)
+    Logger.log(error)
 
     const workersIds = Object.keys(cluster.workers)
     workersIds.forEach(id => {
       const worker = cluster.workers[id]
-      worker.send({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode } })
+      worker.send({ message: constants.WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode } })
     })
   }
 }
 
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
-const MASTER_MESSAGES_RUN = {
-  [MASTER_MESSAGES.SEND_LOG]: sendLog,
-  [MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
-  [MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
-  [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
+export default {
+  [constants.MASTER_MESSAGES.SEND_LOG]: sendLog,
+  [constants.MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
+  [constants.MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
+  [constants.MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
 }
-
-export default { MASTER_MESSAGES_RUN }
