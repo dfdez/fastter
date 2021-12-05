@@ -5,4 +5,4 @@ const WORKER_MESSAGES = {
   STOP_WORKER: 'STOP_WORKER'
 }
 
-module.exports = WORKER_MESSAGES
+export default WORKER_MESSAGES

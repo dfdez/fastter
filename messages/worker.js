@@ -99,4 +99,4 @@ const WORKER_MESSAGES_RUN = {
   [WORKER_MESSAGES.STOP_WORKER]: stopWorker
 }
 
-module.exports = { WORKER_MESSAGES_RUN }
+export default  { WORKER_MESSAGES_RUN }

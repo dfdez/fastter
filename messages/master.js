@@ -82,4 +82,4 @@ const MASTER_MESSAGES_RUN = {
   [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
 }
 
-module.exports = { MASTER_MESSAGES_RUN }
+export default { MASTER_MESSAGES_RUN }

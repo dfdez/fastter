@@ -6,4 +6,4 @@ const MASTER_MESSAGES = {
   EXIT_ALL_WORKERS: 'EXIT_ALL_WORKERS'
 }
 
-module.exports = MASTER_MESSAGES
+export default MASTER_MESSAGES

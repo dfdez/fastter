@@ -30,4 +30,4 @@ const setupCluster = () => {
   }
 }
 
-module.exports = { runMasterMessage, runWorkerMessage, setupCluster }
+export default { runMasterMessage, runWorkerMessage, setupCluster }
