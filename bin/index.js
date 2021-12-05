@@ -1,14 +1,14 @@
 #! /usr/bin/env node
 import cluster from 'cluster'
-import { setupCluster } from '../index.js'
-import { loadOptions } from '../lib/options.js'
-import { initMaster } from '../lib/master/index.js'
+import Fastter from '../index.js'
+import Options from '../lib/options.js'
+import Master from '../lib/master/index.js'
 
-setupCluster()
+Fastter.setupCluster()
 
 if (cluster.isMaster) {
-  const options = loadOptions()
-  initMaster(options)
+  const options = Options.loadOptions()
+  Master.initMaster(options)
 } else if (cluster.isWorker) {
   console.log('?')
 }
