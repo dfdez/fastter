@@ -1,6 +1,6 @@
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
-const { formatError } = require('../lib/logger.js')
-const { loadConfig } = require('../lib/config.js')
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants/index.js'
+import { formatError } from '../lib/logger.js'
+import { loadConfig } from '../lib/config.js'
 
 /**
  * Send error message to master
@@ -29,7 +29,7 @@ const sendWorkerError = (worker, { options, error }) => {
  */
 const prepareTest = async (worker, { options }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     await config.prepareTest({ options })
     // Start runTest askForWork loop
     await runTest(worker, { options })
@@ -62,7 +62,7 @@ const askForWork = async (worker, { options, config }) => {
  */
 const runTest = async (worker, { options }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
     worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
@@ -82,7 +82,7 @@ const runTest = async (worker, { options }) => {
  */
 const stopWorker = async (worker, { options, exitCode }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     await config.stopTest({ options, exitCode })
     worker.disconnect()
     process.exit(exitCode)

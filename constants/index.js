@@ -1,4 +1,4 @@
-const MASTER_MESSAGES = require('./master.js')
-const WORKER_MESSAGES = require('./worker.js')
+import MASTER_MESSAGES from './master.js'
+import WORKER_MESSAGES from './worker.js'
 
 module.exports = { MASTER_MESSAGES, WORKER_MESSAGES }

@@ -1,8 +1,8 @@
-const cluster = require('cluster')
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
-const { log } = require('../lib/logger.js')
-const { getNextFile, getTotalFiles } = require('../lib/files/index.js')
-const { workersStats, addWorkersStats } = require('../lib/master/stats.js')
+import cluster from 'cluster'
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants/index.js'
+import { log } from '../lib/logger.js'
+import { getNextFile, getTotalFiles } from '../lib/files/index.js'
+import { workersStats, addWorkersStats } from '../lib/master/stats.js'
 
 /**
  * Send a log from a worker

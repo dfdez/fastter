@@ -1,7 +1,7 @@
 'use strict'
-const cluster = require('cluster')
-const { MASTER_ERRORS, WORKER_ERRORS } = require('./lib/errors.js')
-const { MASTER_MESSAGES_RUN, WORKER_MESSAGES_RUN } = require('./messages')
+import cluster from 'cluster'
+import { MASTER_ERRORS, WORKER_ERRORS } from './lib/errors.js'
+import { MASTER_MESSAGES_RUN, WORKER_MESSAGES_RUN } from './messages/index.js'
 
 const runMasterMessage = (worker, msg) => {
   const { message, data } = msg
@@ -11,6 +11,7 @@ const runMasterMessage = (worker, msg) => {
 }
 
 const runWorkerMessage = (msg) => {
+  console.log({ msg })
   const worker = cluster.worker
   const { message, data } = msg
   const exec = WORKER_MESSAGES_RUN[message]
@@ -25,6 +26,7 @@ const setupCluster = () => {
   } else if (cluster.isWorker) {
     const worker = cluster.worker
     worker.on('message', runWorkerMessage)
+    console.log(':(')
   }
 }
 
