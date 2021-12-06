@@ -2,6 +2,8 @@ import constants from '../constants/index.js'
 import Logger from '../lib/logger.js'
 import Config from '../lib/config.js'
 
+const { MASTER_MESSAGES, WORKER_MESSAGES } = constants
+
 /**
  * Send error message to master
  * @param {Worker} worker Current worker
@@ -11,7 +13,7 @@ import Config from '../lib/config.js'
  */
 const sendWorkerError = (worker, { options, error }) => {
   worker.send({
-    message: constants.MASTER_MESSAGES.EXIT_ALL_WORKERS,
+    message: MASTER_MESSAGES.EXIT_ALL_WORKERS,
     data: {
       options,
       exitCode: 1,
@@ -48,7 +50,7 @@ const prepareTest = async (worker, { options }) => {
 const askForWork = async (worker, { options, config }) => {
   try {
     await config.beforeNextRun({ options })
-    worker.send({ message: constants.MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
+    worker.send({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
   } catch (error) {
     sendWorkerError(worker, { options, error })
   }
@@ -65,7 +67,7 @@ const runTest = async (worker, { options }) => {
     const config = await Config.loadConfig(options._config)
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
-    worker.send({ message: constants.MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
+    worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
     await askForWork(worker, { options, config })
   } catch (error) {
     const { stats } = error
@@ -94,7 +96,7 @@ const stopWorker = async (worker, { options, exitCode }) => {
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
 export default {
-  [constants.WORKER_MESSAGES.PREPARE_TESTS]: prepareTest,
-  [constants.WORKER_MESSAGES.RUN_TEST]: runTest,
-  [constants.WORKER_MESSAGES.STOP_WORKER]: stopWorker
+  [WORKER_MESSAGES.PREPARE_TESTS]: prepareTest,
+  [WORKER_MESSAGES.RUN_TEST]: runTest,
+  [WORKER_MESSAGES.STOP_WORKER]: stopWorker
 }

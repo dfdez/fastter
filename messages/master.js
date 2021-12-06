@@ -5,11 +5,13 @@ import Files from '../lib/files/index.js'
 import Stats from '../lib/master/stats.js'
 import Options from '../lib/options.js'
 
+const { MASTER_MESSAGES, WORKER_MESSAGES } = constants
+
 const workerReady = (worker) => {
   const options = Options.loadOptions()
   options._nextFile = Files.getNextFile()
   worker.send({
-    message: constants.WORKER_MESSAGES.PREPARE_TESTS,
+    message: WORKER_MESSAGES.PREPARE_TESTS,
     data: {
       options
     }
@@ -38,10 +40,10 @@ const askForWork = (worker, { options }) => {
     // Set the new file to test
     options._nextFile = nextFile
     // Send work to the worker
-    worker.send({ message: constants.WORKER_MESSAGES.RUN_TEST, data: { options } })
+    worker.send({ message: WORKER_MESSAGES.RUN_TEST, data: { options } })
   } else {
     // Stop the worker since there is nothing to do
-    worker.send({ message: constants.WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
+    worker.send({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
   }
 }
 
@@ -80,7 +82,7 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
     const workersIds = Object.keys(cluster.workers)
     workersIds.forEach(id => {
       const worker = cluster.workers[id]
-      worker.send({ message: constants.WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode } })
+      worker.send({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode } })
     })
   }
 }
@@ -88,9 +90,9 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
 export default {
-  [constants.MASTER_MESSAGES.WORKER_READY]: workerReady,
-  [constants.MASTER_MESSAGES.SEND_LOG]: sendLog,
-  [constants.MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
-  [constants.MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
-  [constants.MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
+  [MASTER_MESSAGES.WORKER_READY]: workerReady,
+  [MASTER_MESSAGES.SEND_LOG]: sendLog,
+  [MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
+  [MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
+  [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
 }
