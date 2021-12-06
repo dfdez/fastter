@@ -1,5 +1,6 @@
 // Constant to define all master message names
 const MASTER_MESSAGES = {
+  WORKER_READY: 'WORKER_READY',
   SEND_LOG: 'SEND_LOG',
   ASK_FOR_WORK: 'ASK_FOR_WORK',
   REGISTER_TEST_COUNT: 'REGISTER_TEST_COUNT',

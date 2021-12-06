@@ -3,6 +3,18 @@ import constants from '../constants/index.js'
 import Logger from '../lib/logger.js'
 import Files from '../lib/files/index.js'
 import Stats from '../lib/master/stats.js'
+import Options from '../lib/options.js'
+
+const workerReady = (worker) => {
+  const options = Options.loadOptions()
+  options._nextFile = Files.getNextFile()
+  worker.send({
+    message: constants.WORKER_MESSAGES.PREPARE_TESTS,
+    data: {
+      options
+    }
+  })
+}
 
 /**
  * Send a log from a worker
@@ -76,6 +88,7 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
 // The function to execute for each message
 // Each function will received the worker, and the data sended in the message
 export default {
+  [constants.MASTER_MESSAGES.WORKER_READY]: workerReady,
   [constants.MASTER_MESSAGES.SEND_LOG]: sendLog,
   [constants.MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
   [constants.MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,

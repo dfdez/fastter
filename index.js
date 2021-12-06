@@ -11,7 +11,6 @@ const runMasterMessage = (worker, msg) => {
 }
 
 const runWorkerMessage = (msg) => {
-  console.log({ msg })
   const worker = cluster.worker
   const { message, data } = msg
   const exec = messages.WORKER_MESSAGES_RUN[message]
@@ -26,7 +25,6 @@ const setupCluster = () => {
   } else if (cluster.isWorker) {
     const worker = cluster.worker
     worker.on('message', runWorkerMessage)
-    console.log(':(')
   }
 }
 
