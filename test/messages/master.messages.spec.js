@@ -1,15 +1,16 @@
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../../constants')
+import files from '../../lib/files/index.js'
+import Stats from '../../lib/master/stats.js'
+import Logger from '../../lib/logger.js'
+import { MASTER_MESSAGES_RUN } from '../../messages'
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../../constants'
 
 beforeEach(() => {
-  jest.resetAllMocks()
+  jest.clearAllMocks()
+  jest.resetModules()
 })
 
 describe('Test sendLog master message function', () => {
-  jest.resetModules()
-
-  const logger = require('../../lib/logger.js')
-  const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
-  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
+  const spyLog = jest.spyOn(Logger, 'log').mockReturnValue()
 
   const sendLog = MASTER_MESSAGES_RUN[MASTER_MESSAGES.SEND_LOG]
 
@@ -25,14 +26,10 @@ describe('Test sendLog master message function', () => {
 })
 
 describe('Test askForWork master message function', () => {
-  jest.resetModules()
-
   const worker = {
     send: jest.fn()
   }
-  const files = require('../../lib/files/index.js')
   const spyGetNextFile = jest.spyOn(files, 'getNextFile')
-  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
 
   const askForWork = MASTER_MESSAGES_RUN[MASTER_MESSAGES.ASK_FOR_WORK]
 
@@ -60,13 +57,8 @@ describe('Test askForWork master message function', () => {
 })
 
 describe('Test registerTestCount master message function', () => {
-  jest.resetModules()
-
-  const stats = require('../../lib/master/stats.js')
-  const logger = require('../../lib/logger.js')
-  const spyAddWorkersStats = jest.spyOn(stats, 'addWorkersStats')
-  const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
-  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
+  const spyAddWorkersStats = jest.spyOn(Stats, 'addWorkersStats')
+  const spyLog = jest.spyOn(Logger, 'log').mockReturnValue()
 
   const registerTestCount = MASTER_MESSAGES_RUN[MASTER_MESSAGES.REGISTER_TEST_COUNT]
 
@@ -85,39 +77,52 @@ describe('Test registerTestCount master message function', () => {
 })
 
 describe('Test exitAllWorkers master message function', () => {
-  jest.resetModules()
+  it('should add stats and log error', () => {
+    const spyAddWorkersStats = jest.spyOn(Stats, 'addWorkersStats')
+    const spyLog = jest.spyOn(Logger, 'log').mockReturnValue()
+    const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
 
-  const stats = require('../../lib/master/stats.js')
-  const logger = require('../../lib/logger.js')
-  const spyAddWorkersStats = jest.spyOn(stats, 'addWorkersStats')
-  const spyLog = jest.spyOn(logger, 'log').mockReturnValue()
-  const mockSendMessage = jest.fn()
-  jest.doMock('cluster', () => ({
-    workers: {
-      1: {
-        send: mockSendMessage
-      }
-    }
-  }))
-  const { MASTER_MESSAGES_RUN } = require('../../messages/master.js')
-  const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
-
-  it('should exit all workers and don\'t do nothing if already called', () => {
-    const params = { stats: { passes: 1 }, options: { _test: true }, exitCode: 1, error: ['Test error'] }
+    const params = { stats: { passes: 1 }, error: ['Test error'] }
     exitAllWorkers(null, params)
-
-    // should add stats
     expect(spyAddWorkersStats).toHaveBeenCalledWith(params.stats)
-    // should log error
     expect(spyLog).toHaveBeenCalledWith(params.error)
-    // should send stop worker message to all workers
+  })
+
+  it('should send stop worker message to all workers with options and exit code', async () => {
+    jest.resetModules()
+
+    const mockSendMessage = jest.fn()
+    jest.doMock('cluster', () => ({
+      workers: {
+        1: {
+          send: mockSendMessage
+        }
+      }
+    }))
+    const { MASTER_MESSAGES_RUN } = await import('../../messages')
+    const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
+
+    const params = { options: { _test: true }, exitCode: 1 }
+    exitAllWorkers(null, params)
     expect(mockSendMessage).toHaveBeenCalledWith({ message: WORKER_MESSAGES.STOP_WORKER, data: { options: params.options, exitCode: params.exitCode } })
+  })
 
-    // don't do nothing if exitAllWorkers have already been called
+  it('should do nothing if exitAllWorkers have already been called', async () => {
+    jest.resetModules()
+
+    const mockSendMessage = jest.fn()
+    jest.doMock('cluster', () => ({
+      workers: {
+        1: {
+          send: mockSendMessage
+        }
+      }
+    }))
+    const { MASTER_MESSAGES_RUN } = await import('../../messages')
+    const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
+
     exitAllWorkers(null, {})
-
-    expect(spyAddWorkersStats).toHaveBeenCalledTimes(1)
-    expect(spyLog).toHaveBeenCalledTimes(1)
+    exitAllWorkers(null, {})
     expect(mockSendMessage).toHaveBeenCalledTimes(1)
   })
 })

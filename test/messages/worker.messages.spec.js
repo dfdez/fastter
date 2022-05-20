@@ -1,5 +1,7 @@
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../../constants')
-const { formatError } = require('../../lib/logger')
+import config from '../../lib/config.js'
+import { WORKER_MESSAGES_RUN } from '../../messages'
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../../constants'
+import { formatError } from '../../lib/logger'
 
 const exitAllWorkersHaveBeenCalledWith = (worker, params) => {
   const { options, error } = params
@@ -14,16 +16,8 @@ const exitAllWorkersHaveBeenCalledWith = (worker, params) => {
   })
 }
 
-beforeEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('Test prepareTest worker message function', () => {
-  jest.resetModules()
-
-  const config = require('../../lib/config.js')
   const spyLoadConfig = jest.spyOn(config, 'loadConfig')
-  const { WORKER_MESSAGES_RUN } = require('../../messages/worker.js')
 
   const prepareTest = WORKER_MESSAGES_RUN[WORKER_MESSAGES.PREPARE_TESTS]
 
@@ -79,11 +73,7 @@ describe('Test prepareTest worker message function', () => {
 })
 
 describe('Test runTest worker message function', () => {
-  jest.resetModules()
-
-  const config = require('../../lib/config.js')
   const spyLoadConfig = jest.spyOn(config, 'loadConfig')
-  const { WORKER_MESSAGES_RUN } = require('../../messages/worker.js')
 
   const runTest = WORKER_MESSAGES_RUN[WORKER_MESSAGES.RUN_TEST]
 
@@ -161,12 +151,8 @@ describe('Test runTest worker message function', () => {
 })
 
 describe('Test stopTest worker message function', () => {
-  jest.resetModules()
-
-  const config = require('../../lib/config.js')
   const spyLoadConfig = jest.spyOn(config, 'loadConfig')
   const spyProcessExit = jest.spyOn(process, 'exit')
-  const { WORKER_MESSAGES_RUN } = require('../../messages/worker.js')
 
   const stopWorker = WORKER_MESSAGES_RUN[WORKER_MESSAGES.STOP_WORKER]
 

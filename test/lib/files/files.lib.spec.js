@@ -1,4 +1,4 @@
-const { MASTER_ERRORS } = require('../../../lib/errors.js')
+import { MASTER_ERRORS } from '../../../lib/errors.js'
 
 describe('Test collectFiles', () => {
   beforeEach(() => {
@@ -6,43 +6,43 @@ describe('Test collectFiles', () => {
     jest.resetModules()
   })
 
-  it('should throw an error if collectFiles param is an empty array', () => {
+  it('should throw an error if collectFiles param is an empty array', async () => {
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: () => []
     }))
-    const { collectFiles } = require('../../../lib/files/index.js')
+    const { collectFiles } = await import('../../../lib/files/index.js')
 
     expect(() => collectFiles([])).toThrow(new Error(MASTER_ERRORS.NO_LOOKUPS))
   })
 
-  it('should throw an error if collectFiles has already any file loaded', () => {
+  it('should throw an error if collectFiles has already any file loaded', async () => {
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: () => ['index.spec.js']
     }))
-    const { collectFiles } = require('../../../lib/files/index.js')
+    const { collectFiles } = await import('../../../lib/files/index.js')
 
     collectFiles(['index.spec.js'])
     expect(() => collectFiles(['index.spec.js'])).toThrow(new Error(MASTER_ERRORS.FILES_ALREADY_COLLECTED))
   })
 
-  it('should call collectFiles for each lookup in param', () => {
+  it('should call collectFiles for each lookup in param', async () => {
     const mockLookupFiles = jest.fn()
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: mockLookupFiles
     }))
-    const { collectFiles } = require('../../../lib/files/index.js')
+    const { collectFiles } = await import('../../../lib/files/index.js')
 
     collectFiles(['*.spec.js', '*.integration.js'])
     expect(mockLookupFiles).toHaveBeenCalledTimes(2)
   })
 
-  it('should return an array with all looked up files', () => {
+  it('should return an array with all looked up files', async () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = jest.fn(() => lookupFilesReturn)
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: mockLookupFiles
     }))
-    const { collectFiles } = require('../../../lib/files/index.js')
+    const { collectFiles } = await import('../../../lib/files/index.js')
 
     const collectedFiles = collectFiles(['*.spec.js', '*.integration.js'])
     const expectedFiles = [...lookupFilesReturn, ...lookupFilesReturn]
@@ -56,13 +56,13 @@ describe('Test getNextFile', () => {
     jest.resetModules()
   })
 
-  it('should return the next file to run', () => {
+  it('should return the next file to run', async () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = jest.fn(() => lookupFilesReturn)
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: mockLookupFiles
     }))
-    const { collectFiles, getNextFile } = require('../../../lib/files/index.js')
+    const { collectFiles, getNextFile } = await import('../../../lib/files/index.js')
 
     collectFiles(['*.spec.js'])
 
@@ -79,13 +79,13 @@ describe('Test getTotalFiles', () => {
     jest.resetModules()
   })
 
-  it('should return the length of files', () => {
+  it('should return the length of files', async () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = jest.fn(() => lookupFilesReturn)
     jest.doMock('../../../lib/files/lookupFiles.js', () => ({
       lookupFiles: mockLookupFiles
     }))
-    const { collectFiles, getTotalFiles } = require('../../../lib/files/index.js')
+    const { collectFiles, getTotalFiles } = await import('../../../lib/files/index.js')
 
     collectFiles(['*.spec.js'])
     const totalFiles = getTotalFiles()

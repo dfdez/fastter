@@ -1,8 +1,8 @@
-const cluster = require('cluster')
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
-const { MASTER_ERRORS, WORKER_ERRORS } = require('../lib/errors.js')
-const { MASTER_MESSAGES_RUN, WORKER_MESSAGES_RUN } = require('../messages')
-const { setupCluster, runMasterMessage, runWorkerMessage } = require('../index.js')
+import cluster from 'cluster'
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants'
+import { MASTER_ERRORS, WORKER_ERRORS } from '../lib/errors.js'
+import { MASTER_MESSAGES_RUN, WORKER_MESSAGES_RUN } from '../messages'
+import { setupCluster, runMasterMessage, runWorkerMessage } from '../index.js'
 
 describe('Test runMasterMessage', () => {
   it('runMasterMessage should throw an error if message to execute is not defined', () => {
@@ -41,7 +41,7 @@ describe('Test setupCluster', () => {
     expect(spyClusterOn).toHaveBeenCalledWith('message', runMasterMessage)
   })
 
-  it('setupCluster should add message listener in worker', () => {
+  it('setupCluster should add message listener in worker', async () => {
     jest.resetModules()
     const worker = {
       on: jest.fn()
@@ -51,8 +51,8 @@ describe('Test setupCluster', () => {
       isWorker: true,
       worker
     }))
-    const cluster = require('cluster')
-    const { setupCluster, runWorkerMessage } = require('../index.js')
+    const cluster = await import('cluster')
+    const { setupCluster, runWorkerMessage } = await import('../index.js')
     setupCluster()
     expect(cluster.isMaster).toBe(false)
     expect(cluster.isWorker).toBe(true)

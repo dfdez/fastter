@@ -1,3 +1,6 @@
+import { colorize, formatError, log } from '../../lib/logger.js'
+import readline from 'readline'
+
 const colors = {
   reset: '\x1b[0m',
   warning: '\x1b[93m',
@@ -6,8 +9,6 @@ const colors = {
 }
 
 describe('Test colorize', () => {
-  const { colorize } = require('../../lib/logger.js')
-
   it('should return original string if color does not exist', () => {
     const color = 'random'
     const originalString = 'Text colored'
@@ -38,8 +39,6 @@ describe('Test colorize', () => {
 })
 
 describe('Test formatError', () => {
-  const { formatError } = require('../../lib/logger.js')
-
   it('should make grey all lines less the first line of the stack', () => {
     const error = new Error()
     const originalStack = error.stack
@@ -80,12 +79,10 @@ describe('Test log', () => {
     jest.resetModules()
   })
 
-  const readline = require('readline')
   const spyStdout = jest.spyOn(process.stdout, 'write').mockReturnValue()
   const spyClearLine = jest.spyOn(readline, 'clearLine').mockReturnValue()
   const spySetInterval = jest.spyOn(global, 'setInterval').mockReturnValue()
   const spyClearInterval = jest.spyOn(global, 'clearInterval').mockReturnValue()
-  const { log } = require('../../lib/logger.js')
 
   const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
 
@@ -126,8 +123,8 @@ describe('Test log', () => {
     })
   })
 
-  it('should create interval with loading interval option and stdout formatted message', () => {
-    const { log } = require('../../lib/logger.js')
+  it('should create interval with loading interval option and stdout formatted message', async () => {
+    const { log } = await import('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
 
     expect(spySetInterval).toHaveBeenCalled()
@@ -138,19 +135,19 @@ describe('Test log', () => {
     expect(spyStdout).toHaveBeenCalledWith(`\r${spinner[0]} Testing`)
   })
 
-  it('should only have one interval execution at the same time', () => {
-    const { log } = require('../../lib/logger.js')
+  it('should only have one interval execution at the same time', async () => {
+    const { log } = await import('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
     log('Testing', { loadingInterval: true })
 
     expect(spySetInterval).toHaveBeenCalledTimes(1)
   })
 
-  it('should clear interval if non interval message is received', () => {
+  it('should clear interval if non interval message is received', async () => {
     const interval = 'interval'
     spySetInterval.mockReturnValue(interval)
 
-    const { log } = require('../../lib/logger.js')
+    const { log } = await import('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
     log('Testing')
 
