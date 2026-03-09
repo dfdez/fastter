@@ -8,7 +8,7 @@ describe('Test collectFiles', () => {
 
   it('should throw an error if collectFiles param is an empty array', async () => {
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: () => []
+      lookupFiles: () => [],
     }))
     const { collectFiles } = await import('./index.js')
 
@@ -17,18 +17,20 @@ describe('Test collectFiles', () => {
 
   it('should throw an error if collectFiles has already any file loaded', async () => {
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: () => ['index.spec.js']
+      lookupFiles: () => ['index.spec.js'],
     }))
     const { collectFiles } = await import('./index.js')
 
     collectFiles(['index.spec.js'])
-    expect(() => collectFiles(['index.spec.js'])).toThrow(new Error(MASTER_ERRORS.FILES_ALREADY_COLLECTED))
+    expect(() => collectFiles(['index.spec.js'])).toThrow(
+      new Error(MASTER_ERRORS.FILES_ALREADY_COLLECTED)
+    )
   })
 
   it('should call lookupFiles for each lookup in param', async () => {
     const mockLookupFiles = vi.fn()
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: mockLookupFiles
+      lookupFiles: mockLookupFiles,
     }))
     const { collectFiles } = await import('./index.js')
 
@@ -40,7 +42,7 @@ describe('Test collectFiles', () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = vi.fn(() => lookupFilesReturn)
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: mockLookupFiles
+      lookupFiles: mockLookupFiles,
     }))
     const { collectFiles } = await import('./index.js')
 
@@ -60,7 +62,7 @@ describe('Test getNextFile', () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = vi.fn(() => lookupFilesReturn)
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: mockLookupFiles
+      lookupFiles: mockLookupFiles,
     }))
     const { collectFiles, getNextFile } = await import('./index.js')
 
@@ -83,7 +85,7 @@ describe('Test getTotalFiles', () => {
     const lookupFilesReturn = ['index.spec.js', 'index.integration.js']
     const mockLookupFiles = vi.fn(() => lookupFilesReturn)
     vi.doMock('./lookupFiles.js', () => ({
-      lookupFiles: mockLookupFiles
+      lookupFiles: mockLookupFiles,
     }))
     const { collectFiles, getTotalFiles } = await import('./index.js')
 

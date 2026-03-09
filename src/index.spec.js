@@ -4,7 +4,7 @@ import { MASTER_ERRORS, WORKER_ERRORS } from './lib/errors.js'
 vi.mock('./lib/logger.js', () => ({
   log: vi.fn(),
   colorize: vi.fn((_, s) => s),
-  formatError: vi.fn()
+  formatError: vi.fn(),
 }))
 
 vi.mock('./messages/index.js', () => ({
@@ -12,13 +12,13 @@ vi.mock('./messages/index.js', () => ({
     [MASTER_MESSAGES.SEND_LOG]: vi.fn(),
     [MASTER_MESSAGES.ASK_FOR_WORK]: vi.fn(),
     [MASTER_MESSAGES.REGISTER_TEST_COUNT]: vi.fn(),
-    [MASTER_MESSAGES.EXIT_ALL_WORKERS]: vi.fn()
+    [MASTER_MESSAGES.EXIT_ALL_WORKERS]: vi.fn(),
   },
   WORKER_MESSAGES_RUN: {
     [WORKER_MESSAGES.PREPARE_TESTS]: vi.fn(),
     [WORKER_MESSAGES.RUN_TEST]: vi.fn(),
-    [WORKER_MESSAGES.STOP_WORKER]: vi.fn()
-  }
+    [WORKER_MESSAGES.STOP_WORKER]: vi.fn(),
+  },
 }))
 
 describe('Test runMasterMessage', () => {
@@ -70,8 +70,8 @@ describe('Test setupCluster', () => {
       default: {
         isPrimary: false,
         isWorker: true,
-        worker
-      }
+        worker,
+      },
     }))
     const cluster = await import('cluster')
     const { setupCluster, runWorkerMessage } = await import('./index.js')

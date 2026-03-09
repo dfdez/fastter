@@ -24,7 +24,10 @@ const registerTestCount = (_, { options, stats }) => {
   addWorkersStats(stats)
   const runningWorkers = workersStats.workersRunning
   const totalWorkers = options._workers
-  log(`Running ${filesTested++}/${getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`, { loading: !options._min, newLine: false })
+  log(
+    `Running ${filesTested++}/${getTotalFiles()} test files in ${runningWorkers}/${totalWorkers} workers`,
+    { loading: !options._min, newLine: false }
+  )
 }
 
 let exiting = false
@@ -37,7 +40,7 @@ const exitAllWorkers = (_, { options, stats = {}, exitCode = 0, error = [] }) =>
     log(error)
 
     const workersIds = Object.keys(cluster.workers)
-    workersIds.forEach(id => {
+    workersIds.forEach((id) => {
       const worker = cluster.workers[id]
       worker.send({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode } })
     })
@@ -48,7 +51,7 @@ const MASTER_MESSAGES_RUN = {
   [MASTER_MESSAGES.SEND_LOG]: sendLog,
   [MASTER_MESSAGES.ASK_FOR_WORK]: askForWork,
   [MASTER_MESSAGES.REGISTER_TEST_COUNT]: registerTestCount,
-  [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers
+  [MASTER_MESSAGES.EXIT_ALL_WORKERS]: exitAllWorkers,
 }
 
 export { MASTER_MESSAGES_RUN }

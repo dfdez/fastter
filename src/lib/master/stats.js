@@ -5,7 +5,7 @@ const workersStats = {
   passes: 0,
   pending: 0,
   failures: 0,
-  workersRunning: 0
+  workersRunning: 0,
 }
 
 const addWorkersStats = (stats) => {

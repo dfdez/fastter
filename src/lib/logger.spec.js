@@ -5,7 +5,7 @@ const colors = {
   reset: '\x1b[0m',
   warning: '\x1b[93m',
   error: '\x1b[31m',
-  grey: '\x1b[90m'
+  grey: '\x1b[90m',
 }
 
 describe('Test colorize', () => {

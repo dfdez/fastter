@@ -9,12 +9,12 @@ const MASTER_ERRORS = {
   NO_STATS: 'Missing stats to add',
   NO_GLOB_RESULT: (glob) => `No files found in glob ${colorize('warning', `'${glob}'`)})`,
   NO_LOOKUPS: 'You need to send an array of paths in order to lookup at them',
-  FILES_ALREADY_COLLECTED: 'This function has been already called and it has files loaded'
+  FILES_ALREADY_COLLECTED: 'This function has been already called and it has files loaded',
 }
 
 const WORKER_ERRORS = {
   NO_MESSAGE,
-  NO_WORKER: 'Worker is not defined'
+  NO_WORKER: 'Worker is not defined',
 }
 
 export { MASTER_ERRORS, WORKER_ERRORS }

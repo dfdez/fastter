@@ -5,14 +5,14 @@ describe('Test initMaster', () => {
     on: vi.fn(),
     setupPrimary: vi.fn(),
     fork: vi.fn(),
-    send: vi.fn()
+    send: vi.fn(),
   }
 
   const genericMockLoadConfig = {
     loadConfig: vi.fn(() => ({
       beforeSetupWorkers: vi.fn(),
-      setupWorkerEnvironment: vi.fn()
-    }))
+      setupWorkerEnvironment: vi.fn(),
+    })),
   }
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('Test initMaster', () => {
     vi.resetModules()
     vi.doMock('../logger.js', () => ({
       log: vi.fn(),
-      colorize: vi.fn((_, s) => s)
+      colorize: vi.fn((_, s) => s),
     }))
   })
 
@@ -29,7 +29,7 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
@@ -44,7 +44,7 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js', _debug: true }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
@@ -59,16 +59,16 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
 
     const mockBeforeSetupWorkers = vi.fn()
     const mockLoadConfig = vi.fn(() => ({
       beforeSetupWorkers: mockBeforeSetupWorkers,
-      setupWorkerEnvironment: vi.fn()
+      setupWorkerEnvironment: vi.fn(),
     }))
     vi.doMock('../config.js', () => ({
-      loadConfig: mockLoadConfig
+      loadConfig: mockLoadConfig,
     }))
 
     const { initMaster } = await import('./index.js')
@@ -82,32 +82,32 @@ describe('Test initMaster', () => {
       on: vi.fn(),
       setupPrimary: vi.fn(),
       fork: mockFork,
-      send: vi.fn()
+      send: vi.fn(),
     }
     vi.doMock('cluster', () => ({ default: mockCluster }))
 
     const options = { _config: 'fastter.conf.js', _workers: 2 }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
 
     const mockSetupWorkerEnvironment = vi.fn(() => ({ NODE_ENV: 'test' }))
     const mockLoadConfig = vi.fn(() => ({
       beforeSetupWorkers: vi.fn(),
-      setupWorkerEnvironment: mockSetupWorkerEnvironment
+      setupWorkerEnvironment: mockSetupWorkerEnvironment,
     }))
     vi.doMock('../config.js', () => ({
-      loadConfig: mockLoadConfig
+      loadConfig: mockLoadConfig,
     }))
 
     vi.doMock('../files/index.js', () => ({
-      getNextFile: () => 'index.spec.js'
+      getNextFile: () => 'index.spec.js',
     }))
 
     const mockAddWorkerRunning = vi.fn()
     vi.doMock('./stats.js', () => ({
       workersStats: { workersRunning: 0 },
-      addWorkerRunning: mockAddWorkerRunning
+      addWorkerRunning: mockAddWorkerRunning,
     }))
 
     const { initMaster } = await import('./index.js')
@@ -128,31 +128,34 @@ describe('Test initMaster', () => {
       on: vi.fn(),
       setupPrimary: vi.fn(),
       fork: mockFork,
-      send: vi.fn()
+      send: vi.fn(),
     }
     vi.doMock('cluster', () => ({ default: mockCluster }))
 
     const options = { _config: 'fastter.conf.js', _workers: 2 }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
     vi.doMock('../files/index.js', () => ({
-      getNextFile: () => 'index.spec.js'
+      getNextFile: () => 'index.spec.js',
     }))
 
     const mockAddWorkerRunning = vi.fn()
     vi.doMock('./stats.js', () => ({
       workersStats: { workersRunning: 0 },
-      addWorkerRunning: mockAddWorkerRunning
+      addWorkerRunning: mockAddWorkerRunning,
     }))
 
     const { initMaster } = await import('./index.js')
     await initMaster()
 
     expect(mockWorkerSend).toHaveBeenCalledTimes(options._workers)
-    expect(mockWorkerSend).toHaveBeenCalledWith({ message: WORKER_MESSAGES.PREPARE_TESTS, data: { options } })
+    expect(mockWorkerSend).toHaveBeenCalledWith({
+      message: WORKER_MESSAGES.PREPARE_TESTS,
+      data: { options },
+    })
   })
 
   it('should add exit events', async () => {
@@ -162,7 +165,7 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
@@ -182,20 +185,20 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
     const mockLogWorkerStats = vi.fn()
     vi.doMock('./stats.js', () => ({
       workersStats: { workersRunning: 0 },
-      logWorkerStats: mockLogWorkerStats
+      logWorkerStats: mockLogWorkerStats,
     }))
 
     const { initMaster } = await import('./index.js')
     await initMaster()
 
-    const onSigTermCallFunction = spyProcessOn.mock.calls.find(call => call[0] === 'SIGTERM')[1]
+    const onSigTermCallFunction = spyProcessOn.mock.calls.find((call) => call[0] === 'SIGTERM')[1]
 
     onSigTermCallFunction()
     expect(mockLogWorkerStats).toHaveBeenCalledTimes(1)
@@ -211,20 +214,20 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
     const mockLogWorkerStats = vi.fn()
     vi.doMock('./stats.js', () => ({
       workersStats: { workersRunning: 0 },
-      logWorkerStats: mockLogWorkerStats
+      logWorkerStats: mockLogWorkerStats,
     }))
 
     const { initMaster } = await import('./index.js')
     await initMaster()
 
-    const onSigIntCallFunction = spyProcessOn.mock.calls.find(call => call[0] === 'SIGINT')[1]
+    const onSigIntCallFunction = spyProcessOn.mock.calls.find((call) => call[0] === 'SIGINT')[1]
 
     onSigIntCallFunction()
     expect(mockLogWorkerStats).toHaveBeenCalledTimes(1)
@@ -239,7 +242,7 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
@@ -248,13 +251,15 @@ describe('Test initMaster', () => {
     vi.doMock('./stats.js', () => ({
       logWorkerStats: mockLogWorkerStats,
       removeWorkerRunning: mockRemoveWorkerRunning,
-      workersStats: { workersRunning: 2 }
+      workersStats: { workersRunning: 2 },
     }))
 
     const { initMaster } = await import('./index.js')
     await initMaster()
 
-    const clusterOnExitFunction = genericMockCluster.on.mock.calls.find(call => call[0] === 'exit')[1]
+    const clusterOnExitFunction = genericMockCluster.on.mock.calls.find(
+      (call) => call[0] === 'exit'
+    )[1]
 
     const exitCode = 0
     clusterOnExitFunction(null, exitCode)
@@ -271,7 +276,7 @@ describe('Test initMaster', () => {
 
     const options = { _config: 'fastter.conf.js' }
     vi.doMock('../options.js', () => ({
-      loadOptions: () => options
+      loadOptions: () => options,
     }))
     vi.doMock('../config.js', () => genericMockLoadConfig)
 
@@ -279,13 +284,15 @@ describe('Test initMaster', () => {
     vi.doMock('./stats.js', () => ({
       logWorkerStats: mockLogWorkerStats,
       removeWorkerRunning: vi.fn(),
-      workersStats: { workersRunning: 0 }
+      workersStats: { workersRunning: 0 },
     }))
 
     const { initMaster } = await import('./index.js')
     await initMaster()
 
-    const clusterOnExitFunction = genericMockCluster.on.mock.calls.find(call => call[0] === 'exit')[1]
+    const clusterOnExitFunction = genericMockCluster.on.mock.calls.find(
+      (call) => call[0] === 'exit'
+    )[1]
 
     const exitCode = 0
     clusterOnExitFunction(null, exitCode)

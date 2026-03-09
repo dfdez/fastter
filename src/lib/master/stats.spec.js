@@ -17,14 +17,14 @@ describe('Test addWorkersStats', () => {
     const workersStatsData1 = {
       passes: 1,
       pending: 1,
-      failures: 1
+      failures: 1,
     }
     addWorkersStats(workersStatsData1)
 
     const workersStatsData2 = {
       passes: 2,
       pending: 1,
-      failures: 3
+      failures: 3,
     }
     addWorkersStats(workersStatsData2)
 
@@ -43,14 +43,14 @@ describe('Test logWorkerStats', () => {
   it('should send log with test passing and failures', async () => {
     const mockLogger = vi.fn()
     vi.doMock('../logger.js', () => ({
-      log: mockLogger
+      log: mockLogger,
     }))
     const { workersStats, addWorkersStats, logWorkerStats } = await import('./stats.js')
 
     const workersStatsData = {
       passes: 1,
       pending: 1,
-      failures: 1
+      failures: 1,
     }
     addWorkersStats(workersStatsData)
     logWorkerStats()
@@ -64,14 +64,14 @@ describe('Test logWorkerStats', () => {
   it('should send log with test passing and failures with ? if the stat is NaN', async () => {
     const mockLogger = vi.fn()
     vi.doMock('../logger.js', () => ({
-      log: mockLogger
+      log: mockLogger,
     }))
     const { addWorkersStats, logWorkerStats } = await import('./stats.js')
 
     const workersStatsData = {
       passes: NaN,
       pending: NaN,
-      failures: NaN
+      failures: NaN,
     }
     addWorkersStats(workersStatsData)
     logWorkerStats()

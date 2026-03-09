@@ -4,7 +4,7 @@ const colors = {
   reset: '\x1b[0m',
   warning: '\x1b[93m',
   error: '\x1b[31m',
-  grey: '\x1b[90m'
+  grey: '\x1b[90m',
 }
 
 const colorize = (color, string) => {
@@ -27,7 +27,7 @@ const formatMessage = (message, { loading, loadingInterval, newLine }) => {
     const isArray = Array.isArray(message)
     if (isArray) {
       let formattedMessage = '\r'
-      message.forEach(msg => {
+      message.forEach((msg) => {
         formattedMessage = `${formattedMessage}${msg}\n`
       })
       return formattedMessage

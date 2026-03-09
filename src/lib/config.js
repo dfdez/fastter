@@ -11,7 +11,7 @@ const config = {
   beforeNextRun: /* istanbul ignore next */ () => {},
   runTest: /* istanbul ignore next */ () => {},
   stopTest: /* istanbul ignore next */ () => {},
-  _loaded: false
+  _loaded: false,
 }
 
 const updateConfig = (configKey, value) => {
@@ -29,7 +29,7 @@ const loadConfig = (configFile, loader = require) => {
     if (!configFile) return
     const _config = loader(path.resolve(configFile))
     const configKeys = Object.keys(config)
-    configKeys.forEach(configKey => {
+    configKeys.forEach((configKey) => {
       updateConfig(configKey, _config[configKey])
     })
     config._loaded = true

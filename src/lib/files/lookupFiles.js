@@ -16,7 +16,7 @@ const lookupFiles = (lookup) => {
   }
 
   const files = []
-  fs.readdirSync(lookup).forEach(dir => {
+  fs.readdirSync(lookup).forEach((dir) => {
     const pathname = path.join(lookup, dir)
     const stat = fs.statSync(pathname)
     if (stat.isDirectory()) {

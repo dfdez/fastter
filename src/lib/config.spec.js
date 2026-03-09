@@ -6,7 +6,7 @@ const configObject = {
   prepareTest: () => {},
   beforeNextRun: () => {},
   runTest: () => {},
-  stopTest: () => {}
+  stopTest: () => {},
 }
 
 describe('Test loadConfig', () => {
@@ -49,7 +49,7 @@ describe('Test loadConfig', () => {
     const configPath = './fastter.conf.js'
     const loadedConfig = loadConfig(configPath, mockLoader)
 
-    Object.keys(configObject).forEach(configKey => {
+    Object.keys(configObject).forEach((configKey) => {
       expect(loadedConfig[configKey]).toBe(configObject[configKey])
     })
   })

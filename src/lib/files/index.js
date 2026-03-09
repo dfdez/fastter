@@ -6,7 +6,7 @@ const files = []
 const collectFiles = (lookups) => {
   if (!lookups.length) throw new Error(MASTER_ERRORS.NO_LOOKUPS)
   if (files.length) throw new Error(MASTER_ERRORS.FILES_ALREADY_COLLECTED)
-  lookups.forEach(lookup => {
+  lookups.forEach((lookup) => {
     const lookedFiles = lookupFiles(lookup)
     if (Array.isArray(lookedFiles)) files.push(...lookedFiles)
     else files.push(lookedFiles)

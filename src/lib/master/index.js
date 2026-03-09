@@ -43,8 +43,8 @@ const initMaster = async (options = loadOptions()) => {
       worker.send({
         message: WORKER_MESSAGES.PREPARE_TESTS,
         data: {
-          options
-        }
+          options,
+        },
       })
     }
   }

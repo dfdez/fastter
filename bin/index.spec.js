@@ -1,13 +1,13 @@
 vi.mock('../src/index.js', () => ({
-  setupCluster: vi.fn()
+  setupCluster: vi.fn(),
 }))
 
 vi.mock('../src/lib/master/index.js', () => ({
-  initMaster: vi.fn()
+  initMaster: vi.fn(),
 }))
 
 vi.mock('../src/lib/options.js', () => ({
-  loadOptions: vi.fn()
+  loadOptions: vi.fn(),
 }))
 
 it('should setup cluster, load options and init master with loaded options', async () => {

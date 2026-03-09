@@ -38,9 +38,9 @@ describe('Test lookupFiles', () => {
         default: {
           ...fs.default,
           statSync: () => ({
-            isFile: () => true
-          })
-        }
+            isFile: () => true,
+          }),
+        },
       }
     })
     const { lookupFiles } = await import('./lookupFiles.js')
@@ -60,10 +60,10 @@ describe('Test lookupFiles', () => {
           ...fs.default,
           statSync: (param) => ({
             isFile: () => param !== lookup,
-            isDirectory: () => param === lookup
+            isDirectory: () => param === lookup,
           }),
-          readdirSync: () => readdirSyncMock
-        }
+          readdirSync: () => readdirSyncMock,
+        },
       }
     })
     const { lookupFiles } = await import('./lookupFiles.js')
@@ -86,15 +86,18 @@ describe('Test lookupFiles', () => {
           ...fs.default,
           statSync: (param) => ({
             isFile: () => param !== lookup && param !== lookupDirectory,
-            isDirectory: () => param === lookup || param === lookupDirectory
+            isDirectory: () => param === lookup || param === lookupDirectory,
           }),
-          readdirSync: (param) => param === lookup ? readdirSyncMock1 : readdirSyncMock2
-        }
+          readdirSync: (param) => (param === lookup ? readdirSyncMock1 : readdirSyncMock2),
+        },
       }
     })
     const { lookupFiles } = await import('./lookupFiles.js')
 
     const lookedUpFiles = lookupFiles(lookup)
-    expect(lookedUpFiles).toStrictEqual([`${lookupDirectory}options.spec.js`, `${lookup}index.spec.js`])
+    expect(lookedUpFiles).toStrictEqual([
+      `${lookupDirectory}options.spec.js`,
+      `${lookup}index.spec.js`,
+    ])
   })
 })

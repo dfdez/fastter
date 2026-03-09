@@ -12,7 +12,7 @@ describe('Test loadOptions', () => {
       config: 'fastter.conf.js',
       'cpu-limit': 6,
       min: true,
-      _: []
+      _: [],
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
@@ -22,14 +22,14 @@ describe('Test loadOptions', () => {
           return yargsMock
         },
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })
 
     vi.doMock('yargs/yargs', () => ({ default: yargsMock }))
     vi.doMock('./files/index.js', () => ({
-      collectFiles: () => []
+      collectFiles: () => [],
     }))
     const { loadOptions } = await import('./options.js')
     loadOptions()
@@ -39,24 +39,26 @@ describe('Test loadOptions', () => {
     const yargsLoadedOptions = {
       'cpu-limit': 6,
       min: true,
-      _: ['index.spec.js']
+      _: ['index.spec.js'],
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
         options: () => yargsMock,
         check: (checkFunction) => {
-          expect(() => checkFunction(yargsLoadedOptions)).toThrow(new Error(MASTER_ERRORS.NO_CONFIG))
+          expect(() => checkFunction(yargsLoadedOptions)).toThrow(
+            new Error(MASTER_ERRORS.NO_CONFIG)
+          )
           return yargsMock
         },
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })
 
     vi.doMock('yargs/yargs', () => ({ default: yargsMock }))
     vi.doMock('./files/index.js', () => ({
-      collectFiles: () => []
+      collectFiles: () => [],
     }))
     const { loadOptions } = await import('./options.js')
     loadOptions()
@@ -67,7 +69,7 @@ describe('Test loadOptions', () => {
       config: 'fastter.conf.js',
       'cpu-limit': 6,
       min: true,
-      _: ['index.spec.js']
+      _: ['index.spec.js'],
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
@@ -77,14 +79,14 @@ describe('Test loadOptions', () => {
           return yargsMock
         },
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })
 
     vi.doMock('yargs/yargs', () => ({ default: yargsMock }))
     vi.doMock('./files/index.js', () => ({
-      collectFiles: () => []
+      collectFiles: () => [],
     }))
 
     const { loadOptions } = await import('./options.js')
@@ -100,7 +102,7 @@ describe('Test loadOptions', () => {
       config,
       'cpu-limit': 6,
       min: true,
-      _: ['index.spec.js']
+      _: ['index.spec.js'],
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
@@ -110,14 +112,14 @@ describe('Test loadOptions', () => {
           return yargsMock
         },
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })
 
     vi.doMock('yargs/yargs', () => ({ default: yargsMock }))
     vi.doMock('./files/index.js', () => ({
-      collectFiles: () => []
+      collectFiles: () => [],
     }))
 
     const { loadOptions } = await import('./options.js')
@@ -135,7 +137,7 @@ describe('Test loadOptions', () => {
         options: () => yargsMock,
         check: () => yargsMock,
         help: () => yargsMock,
-        argv: {}
+        argv: {},
       }
       return yargsMock
     })
@@ -145,7 +147,7 @@ describe('Test loadOptions', () => {
     const filesCollectResult = ['index.spec.js', 'index.integration.js']
     const collectFilesMock = vi.fn(() => filesCollectResult)
     vi.doMock('./files/index.js', () => ({
-      collectFiles: collectFilesMock
+      collectFiles: collectFilesMock,
     }))
 
     const { loadOptions } = await import('./options.js')
@@ -162,7 +164,7 @@ describe('Test loadOptions', () => {
         options: () => yargsMock,
         check: () => yargsMock,
         help: () => yargsMock,
-        argv: {}
+        argv: {},
       }
       return yargsMock
     })
@@ -178,14 +180,14 @@ describe('Test loadOptions', () => {
   it('should return object with _workers option with the cpu limit set on argv', async () => {
     const cpuLimit = '6'
     const yargsLoadedOptions = {
-      'cpu-limit': cpuLimit
+      'cpu-limit': cpuLimit,
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
         options: () => yargsMock,
         check: () => yargsMock,
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })
@@ -204,14 +206,14 @@ describe('Test loadOptions', () => {
 
     const cpuLimit = '6'
     const yargsLoadedOptions = {
-      'cpu-limit': cpuLimit
+      'cpu-limit': cpuLimit,
     }
     const yargsMock = vi.fn(() => {
       const yargsMock = {
         options: () => yargsMock,
         check: () => yargsMock,
         help: () => yargsMock,
-        argv: yargsLoadedOptions
+        argv: yargsLoadedOptions,
       }
       return yargsMock
     })

@@ -4,11 +4,11 @@ import { formatError } from '../lib/logger.js'
 vi.mock('../lib/logger.js', () => ({
   log: vi.fn(),
   colorize: vi.fn((_, s) => s),
-  formatError: vi.fn((e) => e.message)
+  formatError: vi.fn((e) => e.message),
 }))
 
 vi.mock('../lib/config.js', () => ({
-  loadConfig: vi.fn()
+  loadConfig: vi.fn(),
 }))
 
 const exitAllWorkersHaveBeenCalledWith = (worker, params) => {
@@ -19,8 +19,8 @@ const exitAllWorkersHaveBeenCalledWith = (worker, params) => {
       options,
       exitCode: 1,
       error: error.formatted || formatError(error),
-      stats: error.stats
-    }
+      stats: error.stats,
+    },
   })
 }
 
@@ -36,7 +36,11 @@ describe('Test prepareTest worker message function', () => {
 
     const worker = { send: vi.fn() }
     const error = new Error('Error preparing test')
-    vi.mocked(loadConfig).mockReturnValue({ prepareTest: () => { throw error } })
+    vi.mocked(loadConfig).mockReturnValue({
+      prepareTest: () => {
+        throw error
+      },
+    })
     const options = { _config: 'fastter.conf.js' }
     await prepareTest(worker, { options })
     expect(loadConfig).toHaveBeenCalledWith(options._config)
@@ -77,14 +81,21 @@ describe('Test prepareTest worker message function', () => {
     const mockPrepareTest = vi.fn()
     const mockRunTest = vi.fn()
     const mockBeforeNextRun = vi.fn()
-    vi.mocked(loadConfig).mockReturnValue({ prepareTest: mockPrepareTest, runTest: mockRunTest, beforeNextRun: mockBeforeNextRun })
+    vi.mocked(loadConfig).mockReturnValue({
+      prepareTest: mockPrepareTest,
+      runTest: mockRunTest,
+      beforeNextRun: mockBeforeNextRun,
+    })
     const options = { _config: 'fastter.conf.js' }
     await prepareTest(worker, { options })
     expect(loadConfig).toHaveBeenCalledWith(options._config)
     expect(mockPrepareTest).toHaveBeenCalledWith({ options })
     expect(mockRunTest).toHaveBeenCalledWith({ options })
     expect(mockBeforeNextRun).toHaveBeenCalledWith({ options })
-    expect(worker.send).toHaveBeenCalledWith({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: MASTER_MESSAGES.ASK_FOR_WORK,
+      data: { options },
+    })
   })
 })
 
@@ -96,7 +107,11 @@ describe('Test runTest worker message function', () => {
 
     const worker = { send: vi.fn() }
     const error = new Error('Error running test')
-    vi.mocked(loadConfig).mockReturnValue({ runTest: () => { throw error } })
+    vi.mocked(loadConfig).mockReturnValue({
+      runTest: () => {
+        throw error
+      },
+    })
     const options = { _config: 'fastter.conf.js' }
     await runTest(worker, { options })
     expect(loadConfig).toHaveBeenCalledWith(options._config)
@@ -140,7 +155,10 @@ describe('Test runTest worker message function', () => {
     const options = { _config: 'fastter.conf.js' }
     await runTest(worker, { options })
     expect(mockRunTest).toHaveBeenCalledWith({ options })
-    expect(worker.send).toHaveBeenCalledWith({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: MASTER_MESSAGES.REGISTER_TEST_COUNT,
+      data: { options, stats },
+    })
   })
 
   it('should ask for work', async () => {
@@ -152,13 +170,22 @@ describe('Test runTest worker message function', () => {
     const stats = { passed: 1, skipped: 0, failures: 0 }
     const mockRunTest = vi.fn(() => ({ stats }))
     const mockBeforeNextRun = vi.fn()
-    vi.mocked(loadConfig).mockReturnValue({ runTest: mockRunTest, beforeNextRun: mockBeforeNextRun })
+    vi.mocked(loadConfig).mockReturnValue({
+      runTest: mockRunTest,
+      beforeNextRun: mockBeforeNextRun,
+    })
     const options = { _config: 'fastter.conf.js' }
     await runTest(worker, { options })
     expect(mockRunTest).toHaveBeenCalledWith({ options })
-    expect(worker.send).toHaveBeenCalledWith({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: MASTER_MESSAGES.REGISTER_TEST_COUNT,
+      data: { options, stats },
+    })
     expect(mockBeforeNextRun).toHaveBeenCalledWith({ options })
-    expect(worker.send).toHaveBeenCalledWith({ message: MASTER_MESSAGES.ASK_FOR_WORK, data: { options } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: MASTER_MESSAGES.ASK_FOR_WORK,
+      data: { options },
+    })
   })
 })
 
@@ -170,7 +197,11 @@ describe('Test stopTest worker message function', () => {
 
     const worker = { send: vi.fn() }
     const error = new Error('Error stopping worker')
-    vi.mocked(loadConfig).mockReturnValue({ stopTest: () => { throw error } })
+    vi.mocked(loadConfig).mockReturnValue({
+      stopTest: () => {
+        throw error
+      },
+    })
     const options = { _config: 'fastter.conf.js' }
     await stopWorker(worker, { options })
     expect(loadConfig).toHaveBeenCalledWith(options._config)

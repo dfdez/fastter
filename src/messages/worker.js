@@ -9,8 +9,8 @@ const sendWorkerError = (worker, { options, error }) => {
       options,
       exitCode: 1,
       error: error.formatted || formatError(error),
-      stats: error.stats
-    }
+      stats: error.stats,
+    },
   })
 }
 
@@ -60,7 +60,7 @@ const stopWorker = async (worker, { options, exitCode }) => {
 const WORKER_MESSAGES_RUN = {
   [WORKER_MESSAGES.PREPARE_TESTS]: prepareTest,
   [WORKER_MESSAGES.RUN_TEST]: runTest,
-  [WORKER_MESSAGES.STOP_WORKER]: stopWorker
+  [WORKER_MESSAGES.STOP_WORKER]: stopWorker,
 }
 
 export { WORKER_MESSAGES_RUN }

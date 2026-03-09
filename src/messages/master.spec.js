@@ -3,25 +3,25 @@ import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants/index.js'
 vi.mock('../lib/logger.js', () => ({
   log: vi.fn(),
   colorize: vi.fn((_, s) => s),
-  formatError: vi.fn()
+  formatError: vi.fn(),
 }))
 
 vi.mock('../lib/files/index.js', () => ({
   getNextFile: vi.fn(),
-  getTotalFiles: vi.fn(() => 0)
+  getTotalFiles: vi.fn(() => 0),
 }))
 
 vi.mock('../lib/master/stats.js', () => ({
   workersStats: { workersRunning: 0 },
-  addWorkersStats: vi.fn()
+  addWorkersStats: vi.fn(),
 }))
 
 vi.mock('cluster', () => ({
   default: {
     workers: {
-      1: { send: vi.fn() }
-    }
-  }
+      1: { send: vi.fn() },
+    },
+  },
 }))
 
 beforeEach(() => {
@@ -55,7 +55,10 @@ describe('Test askForWork master message function', () => {
     askForWork(worker, { options })
 
     expect(getNextFile).toHaveBeenCalled()
-    expect(worker.send).toHaveBeenCalledWith({ message: WORKER_MESSAGES.RUN_TEST, data: { options } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: WORKER_MESSAGES.RUN_TEST,
+      data: { options },
+    })
   })
 
   it("should send stop worker message if there isn't more files to run", async () => {
@@ -68,7 +71,10 @@ describe('Test askForWork master message function', () => {
     askForWork(worker, { options })
 
     expect(getNextFile).toHaveBeenCalled()
-    expect(worker.send).toHaveBeenCalledWith({ message: WORKER_MESSAGES.STOP_WORKER, data: { options, exitCode: 0 } })
+    expect(worker.send).toHaveBeenCalledWith({
+      message: WORKER_MESSAGES.STOP_WORKER,
+      data: { options, exitCode: 0 },
+    })
   })
 })
 
@@ -97,12 +103,20 @@ describe('Test exitAllWorkers master message function', () => {
     const { MASTER_MESSAGES_RUN } = await import('./master.js')
     const exitAllWorkers = MASTER_MESSAGES_RUN[MASTER_MESSAGES.EXIT_ALL_WORKERS]
 
-    const params = { stats: { passes: 1 }, options: { _test: true }, exitCode: 1, error: ['Test error'] }
+    const params = {
+      stats: { passes: 1 },
+      options: { _test: true },
+      exitCode: 1,
+      error: ['Test error'],
+    }
     exitAllWorkers(null, params)
 
     expect(addWorkersStats).toHaveBeenCalledWith(params.stats)
     expect(log).toHaveBeenCalledWith(params.error)
-    expect(mockSendMessage).toHaveBeenCalledWith({ message: WORKER_MESSAGES.STOP_WORKER, data: { options: params.options, exitCode: params.exitCode } })
+    expect(mockSendMessage).toHaveBeenCalledWith({
+      message: WORKER_MESSAGES.STOP_WORKER,
+      data: { options: params.options, exitCode: params.exitCode },
+    })
 
     exitAllWorkers(null, {})
 
