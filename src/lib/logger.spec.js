@@ -1,3 +1,6 @@
+import readline from 'readline'
+import { colorize, formatError } from './logger.js'
+
 const colors = {
   reset: '\x1b[0m',
   warning: '\x1b[93m',
@@ -6,8 +9,6 @@ const colors = {
 }
 
 describe('Test colorize', () => {
-  const { colorize } = require('../../lib/logger.js')
-
   it('should return original string if color does not exist', () => {
     const color = 'random'
     const originalString = 'Text colored'
@@ -38,8 +39,6 @@ describe('Test colorize', () => {
 })
 
 describe('Test formatError', () => {
-  const { formatError } = require('../../lib/logger.js')
-
   it('should make grey all lines less the first line of the stack', () => {
     const error = new Error()
     const originalStack = error.stack
@@ -75,19 +74,21 @@ describe('Test formatError', () => {
 })
 
 describe('Test log', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetModules()
-  })
-
-  const readline = require('readline')
-  const spyStdout = jest.spyOn(process.stdout, 'write').mockReturnValue()
-  const spyClearLine = jest.spyOn(readline, 'clearLine').mockReturnValue()
-  const spySetInterval = jest.spyOn(global, 'setInterval').mockReturnValue()
-  const spyClearInterval = jest.spyOn(global, 'clearInterval').mockReturnValue()
-  const { log } = require('../../lib/logger.js')
+  let spyStdout, spyClearLine, spySetInterval, spyClearInterval, log
 
   const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+
+  beforeEach(async () => {
+    vi.resetModules()
+    vi.clearAllMocks()
+    // Fresh import resets module-level interval state (isRunningInterval, etc.)
+    const logger = await import('./logger.js')
+    log = logger.log
+    spyStdout = vi.spyOn(process.stdout, 'write').mockReturnValue()
+    spyClearLine = vi.spyOn(readline, 'clearLine').mockReturnValue()
+    spySetInterval = vi.spyOn(global, 'setInterval').mockReturnValue()
+    spyClearInterval = vi.spyOn(global, 'clearInterval').mockReturnValue()
+  })
 
   it('should clear line and stdout message', () => {
     log('Testing')
@@ -127,7 +128,6 @@ describe('Test log', () => {
   })
 
   it('should create interval with loading interval option and stdout formatted message', () => {
-    const { log } = require('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
 
     expect(spySetInterval).toHaveBeenCalled()
@@ -139,7 +139,6 @@ describe('Test log', () => {
   })
 
   it('should only have one interval execution at the same time', () => {
-    const { log } = require('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
     log('Testing', { loadingInterval: true })
 
@@ -150,7 +149,6 @@ describe('Test log', () => {
     const interval = 'interval'
     spySetInterval.mockReturnValue(interval)
 
-    const { log } = require('../../lib/logger.js')
     log('Testing', { loadingInterval: true })
     log('Testing')
 

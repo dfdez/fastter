@@ -1,17 +1,18 @@
-const { MASTER_ERRORS } = require('../../../lib/errors.js')
+import { MASTER_ERRORS } from '../errors.js'
 
 describe('Test addWorkersStats', () => {
-  beforeEach(() => {
-    jest.resetModules()
+  beforeEach(async () => {
+    vi.resetModules()
   })
-  it('should throw an error if argument is not defined', () => {
-    const { addWorkersStats } = require('../../../lib/master/stats.js')
+
+  it('should throw an error if argument is not defined', async () => {
+    const { addWorkersStats } = await import('./stats.js')
 
     expect(() => addWorkersStats()).toThrow(new Error(MASTER_ERRORS.NO_STATS))
   })
 
-  it('should add new stats to workersStats object', () => {
-    const { workersStats, addWorkersStats } = require('../../../lib/master/stats.js')
+  it('should add new stats to workersStats object', async () => {
+    const { workersStats, addWorkersStats } = await import('./stats.js')
 
     const workersStatsData1 = {
       passes: 1,
@@ -35,16 +36,16 @@ describe('Test addWorkersStats', () => {
 
 describe('Test logWorkerStats', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetModules()
+    vi.clearAllMocks()
+    vi.resetModules()
   })
 
-  it('should send log with test passing and failures', () => {
-    const mockLogger = jest.fn()
-    jest.doMock('../../../lib/logger.js', () => ({
+  it('should send log with test passing and failures', async () => {
+    const mockLogger = vi.fn()
+    vi.doMock('../logger.js', () => ({
       log: mockLogger
     }))
-    const { workersStats, addWorkersStats, logWorkerStats } = require('../../../lib/master/stats.js')
+    const { workersStats, addWorkersStats, logWorkerStats } = await import('./stats.js')
 
     const workersStatsData = {
       passes: 1,
@@ -60,12 +61,12 @@ describe('Test logWorkerStats', () => {
     expect(mockLogger).toHaveBeenCalledWith(`Total test failures ${workersStats.failures}`)
   })
 
-  it('should send log with test passing and failures with ? if the stat is NaN', () => {
-    const mockLogger = jest.fn()
-    jest.doMock('../../../lib/logger.js', () => ({
+  it('should send log with test passing and failures with ? if the stat is NaN', async () => {
+    const mockLogger = vi.fn()
+    vi.doMock('../logger.js', () => ({
       log: mockLogger
     }))
-    const { addWorkersStats, logWorkerStats } = require('../../../lib/master/stats.js')
+    const { addWorkersStats, logWorkerStats } = await import('./stats.js')
 
     const workersStatsData = {
       passes: NaN,
@@ -84,11 +85,11 @@ describe('Test logWorkerStats', () => {
 
 describe('Test addWorkerRunning', () => {
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
   })
 
-  it('should add a new worker running to workers count', () => {
-    const { workersStats, addWorkerRunning } = require('../../../lib/master/stats.js')
+  it('should add a new worker running to workers count', async () => {
+    const { workersStats, addWorkerRunning } = await import('./stats.js')
     addWorkerRunning()
 
     expect(workersStats.workersRunning).toBe(1)
@@ -101,11 +102,11 @@ describe('Test addWorkerRunning', () => {
 
 describe('Test removeWorkerRunning', () => {
   beforeEach(() => {
-    jest.resetModules()
+    vi.resetModules()
   })
 
-  it('should remove a worker running from wokers count', () => {
-    const { workersStats, addWorkerRunning, removeWorkerRunning } = require('../../../lib/master/stats.js')
+  it('should remove a worker running from wokers count', async () => {
+    const { workersStats, addWorkerRunning, removeWorkerRunning } = await import('./stats.js')
     const workersRunning = 3
     for (let i = 0; i < 3; i++) {
       addWorkerRunning()
