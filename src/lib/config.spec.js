@@ -18,11 +18,11 @@ describe('Test loadConfig', () => {
   it('should resolve path and load the config file', async () => {
     const { loadConfig } = await import('./config.js')
 
-    const mockLoader = vi.fn(() => configObject)
+    const mockLoader = vi.fn(async () => ({ default: configObject }))
     const spyPathResolve = vi.spyOn(path, 'resolve')
     const configPath = './fastter.conf.js'
 
-    loadConfig(configPath, mockLoader)
+    await loadConfig(configPath, mockLoader)
 
     expect(spyPathResolve).toHaveBeenCalledWith(configPath)
     expect(mockLoader).toHaveBeenCalled()
@@ -31,12 +31,12 @@ describe('Test loadConfig', () => {
   it('should not resolve path and load the config file if has been already loaded', async () => {
     const { loadConfig } = await import('./config.js')
 
-    const mockLoader = vi.fn(() => configObject)
+    const mockLoader = vi.fn(async () => ({ default: configObject }))
     const spyPathResolve = vi.spyOn(path, 'resolve')
     const configPath = './fastter.conf.js'
 
-    loadConfig(configPath, mockLoader)
-    loadConfig(configPath, mockLoader)
+    await loadConfig(configPath, mockLoader)
+    await loadConfig(configPath, mockLoader)
 
     expect(spyPathResolve).toHaveBeenCalledTimes(1)
     expect(mockLoader).toHaveBeenCalledTimes(1)
@@ -45,9 +45,9 @@ describe('Test loadConfig', () => {
   it('should return config object with config file implementations', async () => {
     const { loadConfig } = await import('./config.js')
 
-    const mockLoader = vi.fn(() => configObject)
+    const mockLoader = vi.fn(async () => ({ default: configObject }))
     const configPath = './fastter.conf.js'
-    const loadedConfig = loadConfig(configPath, mockLoader)
+    const loadedConfig = await loadConfig(configPath, mockLoader)
 
     Object.keys(configObject).forEach((configKey) => {
       expect(loadedConfig[configKey]).toBe(configObject[configKey])

@@ -29,11 +29,11 @@ fastter --config ./fastter.config.js src/**/*.test.js
 
 ## Configuration File
 
-The config file is a CommonJS module that hooks into the execution lifecycle.
+The config file is an ES module that hooks into the execution lifecycle.
 
 ```js
 // fastter.config.js
-module.exports = {
+export default {
   // Master process: runs once before workers are forked
   beforeSetupWorkers: async ({ options }) => {},
 

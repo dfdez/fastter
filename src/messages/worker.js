@@ -16,7 +16,7 @@ const sendWorkerError = (worker, { options, error }) => {
 
 const prepareTest = async (worker, { options }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     await config.prepareTest({ options })
     await runTest(worker, { options })
   } catch (error) {
@@ -35,7 +35,7 @@ const askForWork = async (worker, { options, config }) => {
 
 const runTest = async (worker, { options }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     const testInfo = await config.runTest({ options })
     const { stats } = testInfo || {}
     worker.send({ message: MASTER_MESSAGES.REGISTER_TEST_COUNT, data: { options, stats } })
@@ -48,7 +48,7 @@ const runTest = async (worker, { options }) => {
 
 const stopWorker = async (worker, { options, exitCode }) => {
   try {
-    const config = loadConfig(options._config)
+    const config = await loadConfig(options._config)
     await config.stopTest({ options, exitCode })
     worker.disconnect()
     process.exit(exitCode)

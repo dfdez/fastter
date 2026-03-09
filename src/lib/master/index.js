@@ -29,7 +29,7 @@ const addExitEvents = () => {
 const initMaster = async (options = loadOptions()) => {
   console.time('Time running test')
   addExitEvents()
-  const config = loadConfig(options._config)
+  const config = await loadConfig(options._config)
   cluster.setupPrimary({ silent: !options._debug })
   await config.beforeSetupWorkers({ options })
 
