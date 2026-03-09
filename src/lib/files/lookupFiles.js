@@ -1,12 +1,8 @@
-const glob = require('glob')
-const fs = require('fs')
-const path = require('path')
-const { MASTER_ERRORS } = require('../errors.js')
+import glob from 'glob'
+import fs from 'fs'
+import path from 'path'
+import { MASTER_ERRORS } from '../errors.js'
 
-/**
- * @param {String} lookup Regular expression/file/directory too lookup
- * @returns Path or array of paths
- */
 const lookupFiles = (lookup) => {
   if (glob.hasMagic(lookup)) {
     const globSearch = glob.sync(lookup, { nodir: true })
@@ -14,14 +10,12 @@ const lookupFiles = (lookup) => {
     return globSearch
   }
 
-  // Handle file
   const stat = fs.statSync(lookup)
   if (stat.isFile()) {
     return lookup
   }
 
   const files = []
-  // Handle directory
   fs.readdirSync(lookup).forEach(dir => {
     const pathname = path.join(lookup, dir)
     const stat = fs.statSync(pathname)
@@ -32,4 +26,4 @@ const lookupFiles = (lookup) => {
   return files
 }
 
-module.exports = { lookupFiles }
+export { lookupFiles }

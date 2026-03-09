@@ -1,5 +1,5 @@
-const { MASTER_ERRORS } = require('../errors.js')
-const { log } = require('../logger.js')
+import { MASTER_ERRORS } from '../errors.js'
+import { log } from '../logger.js'
 
 const workersStats = {
   passes: 0,
@@ -7,9 +7,7 @@ const workersStats = {
   failures: 0,
   workersRunning: 0
 }
-/**
- * @param {Object} stats New stats to add
- */
+
 const addWorkersStats = (stats) => {
   if (!stats) throw new Error(MASTER_ERRORS.NO_STATS)
   workersStats.passes = workersStats.passes + stats.passes
@@ -32,4 +30,4 @@ const logWorkerStats = () => {
   log(`Total test failures ${isNaN(failures) ? '?' : failures}`)
 }
 
-module.exports = { workersStats, addWorkersStats, logWorkerStats, addWorkerRunning, removeWorkerRunning }
+export { workersStats, addWorkersStats, logWorkerStats, addWorkerRunning, removeWorkerRunning }

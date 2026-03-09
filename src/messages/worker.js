@@ -1,14 +1,7 @@
-const { MASTER_MESSAGES, WORKER_MESSAGES } = require('../constants')
-const { formatError } = require('../lib/logger.js')
-const { loadConfig } = require('../lib/config.js')
+import { MASTER_MESSAGES, WORKER_MESSAGES } from '../constants/index.js'
+import { formatError } from '../lib/logger.js'
+import { loadConfig } from '../lib/config.js'
 
-/**
- * Send error message to master
- * @param {Worker} worker Current worker
- * @param {Object} data Data in the message
- * @param {Object} data.options Current worker options
- * @param {Object} data.error The error to log
- */
 const sendWorkerError = (worker, { options, error }) => {
   worker.send({
     message: MASTER_MESSAGES.EXIT_ALL_WORKERS,
@@ -21,30 +14,16 @@ const sendWorkerError = (worker, { options, error }) => {
   })
 }
 
-/**
- * Prepare test from config and execute runTest to start runTest askForWork loop
- * @param {Worker} worker Current worker
- * @param {Object} data Data in the message
- * @param {Object} data.options Current worker options
- */
 const prepareTest = async (worker, { options }) => {
   try {
     const config = loadConfig(options._config)
     await config.prepareTest({ options })
-    // Start runTest askForWork loop
     await runTest(worker, { options })
   } catch (error) {
     sendWorkerError(worker, { options, error })
   }
 }
 
-/**
- * Delete all information in DB and askForWork to master
- * @param {Worker} worker Current worker
- * @param {Object} params
- * @param {Object} params.options Current worker options
- * @param {Object} params.config Loaded config object
- */
 const askForWork = async (worker, { options, config }) => {
   try {
     await config.beforeNextRun({ options })
@@ -54,12 +33,6 @@ const askForWork = async (worker, { options, config }) => {
   }
 }
 
-/**
- * Update current files with new options run test and ask for work when finish
- * @param {Worker} worker Current worker
- * @param {Object} data Data in the message
- * @param {Object} data.options Current worker options
- */
 const runTest = async (worker, { options }) => {
   try {
     const config = loadConfig(options._config)
@@ -73,13 +46,6 @@ const runTest = async (worker, { options }) => {
   }
 }
 
-/**
- * Disconnect worker from cluster and exit worker process
- * @param {Worker} worker Current worker
- * @param {Object} data Data in the message
- * @param {Object} data.options Current worker options
- * @param {Object} data.exitCode The exit code to exit
- */
 const stopWorker = async (worker, { options, exitCode }) => {
   try {
     const config = loadConfig(options._config)
@@ -91,12 +57,10 @@ const stopWorker = async (worker, { options, exitCode }) => {
   }
 }
 
-// The function to execute for each message
-// Each function will received the worker, and the data sended in the message
 const WORKER_MESSAGES_RUN = {
   [WORKER_MESSAGES.PREPARE_TESTS]: prepareTest,
   [WORKER_MESSAGES.RUN_TEST]: runTest,
   [WORKER_MESSAGES.STOP_WORKER]: stopWorker
 }
 
-module.exports = { WORKER_MESSAGES_RUN }
+export { WORKER_MESSAGES_RUN }

@@ -1,11 +1,8 @@
-const { lookupFiles } = require('./lookupFiles.js')
-const { MASTER_ERRORS } = require('../errors.js')
+import { lookupFiles } from './lookupFiles.js'
+import { MASTER_ERRORS } from '../errors.js'
 
 const files = []
-/**
- * @param {Object} lookups Array of regular expression/file/directory too lookup
- * @returns An array with all the files
- */
+
 const collectFiles = (lookups) => {
   if (!lookups.length) throw new Error(MASTER_ERRORS.NO_LOOKUPS)
   if (files.length) throw new Error(MASTER_ERRORS.FILES_ALREADY_COLLECTED)
@@ -18,9 +15,7 @@ const collectFiles = (lookups) => {
 }
 
 let filePosition = 0
-/**
- * @returns The next file in files list
- */
+
 const getNextFile = () => {
   const nextFile = files[filePosition]
   if (nextFile) filePosition++
@@ -31,4 +26,4 @@ const getTotalFiles = () => {
   return files.length
 }
 
-module.exports = { collectFiles, getNextFile, getTotalFiles }
+export { collectFiles, getNextFile, getTotalFiles }

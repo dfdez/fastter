@@ -1,22 +1,24 @@
 {
   "env": {
-    "es6": true,
-    "jest/globals": true
+    "es2022": true,
+    "node": true
   },
-  "plugins": [
-    "jest"
-  ],
-  "extends": "standard",
-  "globals": {},
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "globals": {
+    "describe": "readonly",
+    "it": "readonly",
+    "expect": "readonly",
+    "beforeEach": "readonly",
+    "afterEach": "readonly",
+    "beforeAll": "readonly",
+    "afterAll": "readonly",
+    "vi": "readonly"
+  },
   "rules": {
-    "semi": [
-      "error",
-      "never"
-    ],
-    "no-unused-expressions": 0,
-    "jest/no-focused-tests": "error",
-    "jest/no-disabled-tests": "error",
-    "jest/no-standalone-expect": "error",
-    "jest/no-commented-out-tests": "warn"
+    "semi": ["error", "never"],
+    "no-unused-expressions": 0
   }
 }

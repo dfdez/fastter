@@ -1,4 +1,4 @@
-const { colorize } = require('../lib/logger')
+import { colorize } from './logger.js'
 
 const NO_MESSAGE = (message) => `${colorize('warning', `'${message}'`)} message is not defined`
 
@@ -17,4 +17,4 @@ const WORKER_ERRORS = {
   NO_WORKER: 'Worker is not defined'
 }
 
-module.exports = { MASTER_ERRORS, WORKER_ERRORS }
+export { MASTER_ERRORS, WORKER_ERRORS }

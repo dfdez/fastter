@@ -1,12 +1,12 @@
 #! /usr/bin/env node
-const cluster = require('cluster')
-const { setupCluster } = require('../index.js')
-const { loadOptions } = require('../lib/options.js')
-const { initMaster } = require('../lib/master/index.js')
+import cluster from 'cluster'
+import { setupCluster } from '../src/index.js'
+import { loadOptions } from '../src/lib/options.js'
+import { initMaster } from '../src/lib/master/index.js'
 
 setupCluster()
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
   const options = loadOptions()
   initMaster(options)
 }

@@ -1,10 +1,9 @@
-const yargs = require('yargs/yargs')
-const { hideBin } = require('yargs/helpers')
-const { cpus } = require('os')
-
-const { MASTER_ERRORS } = require('./errors.js')
-const { collectFiles } = require('./files/index.js')
-const { colorize } = require('./logger.js')
+import yargs from 'yargs/yargs'
+import { hideBin } from 'yargs/helpers'
+import { cpus } from 'os'
+import { MASTER_ERRORS } from './errors.js'
+import { collectFiles } from './files/index.js'
+import { colorize } from './logger.js'
 
 const cpuLength = cpus().length
 const options = {
@@ -23,10 +22,7 @@ const options = {
     describe: 'Avoid spinner loading and unnecessary logs'
   }
 }
-/**
- * @returns Key value object with all loaded options
- * _${option} Are options used internally
- */
+
 const loadOptions = () => {
   const loadedOptions = yargs(hideBin(process.argv))
     .options(options)
@@ -38,7 +34,6 @@ const loadOptions = () => {
     .help()
     .argv
 
-  // Setup internal options to avoid conflicts
   Object.keys(options).forEach(optionKey => {
     const option = loadedOptions[optionKey]
     if (Array.isArray(option)) {
@@ -50,7 +45,6 @@ const loadOptions = () => {
     }
   })
 
-  // Setup workers
   const { '_cpu-limit': optionsCpuLimit } = loadedOptions
   const cpuLimit = process.env.CPU_LIMIT || optionsCpuLimit
   const maxWorkers = cpuLength
@@ -62,4 +56,4 @@ const loadOptions = () => {
   return loadedOptions
 }
 
-module.exports = { loadOptions }
+export { loadOptions }
